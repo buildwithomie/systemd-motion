@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Simple installation without sudo requirements
+# Systemd Motion - Simple Installation Script
 PROJECT_NAME="systemd-motion"
 INSTALL_DIR="$HOME/.local/share/$PROJECT_NAME"
 STATE_DIR="$HOME/.local/state/$PROJECT_NAME"
@@ -9,7 +9,7 @@ CONFIG_DIR="$HOME/.config/$PROJECT_NAME"
 SERVICE_DIR="$HOME/.config/systemd/user"
 VENV_DIR="$INSTALL_DIR/.venv"
 
-echo "Installing hidden session manager..."
+echo "Installing Systemd Motion..."
 
 # Create directories
 mkdir -p "$INSTALL_DIR" "$STATE_DIR" "$CONFIG_DIR" "$SERVICE_DIR"
@@ -64,10 +64,10 @@ mkdir -p "$HOME/.local/bin"
 ln -sf "$INSTALL_DIR/scripts/motion-ctl" "$HOME/.local/bin/motion-ctl"
 ln -sf "$INSTALL_DIR/scripts/motion-gui" "$HOME/.local/bin/motion-gui"
 
-echo "Hidden session manager installed successfully!"
+echo "Systemd Motion installed successfully!"
 echo ""
 echo "Commands available:"
 echo "  motion-ctl start|stop|restart|status"
-echo "  motion-gui (opens hidden interface)"
+echo "  motion-gui (opens interface)"
 echo ""
 echo "Service running as: systemd-motion.service"

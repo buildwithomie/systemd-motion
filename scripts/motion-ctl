@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Motion Control Script
+# Systemd Motion Control Script
 # Usage: motion-ctl [start|stop|restart|status|enable|disable]
 
 PROJECT_NAME="systemd-motion"

@@ -5,16 +5,13 @@
 
 override_dh_auto_install:
 	# Install application files
-	mkdir -p debian/motion-activity-monitor/usr/share/motion
-	cp -r motion/ debian/motion-activity-monitor/usr/share/motion/
-	cp pyproject.toml debian/motion-activity-monitor/usr/share/motion/
-	cp README.md debian/motion-activity-monitor/usr/share/motion/
+	mkdir -p debian/systemd-motion/usr/share/systemd-motion
+	cp -r motion/ debian/systemd-motion/usr/share/systemd-motion/
+	cp pyproject.toml debian/systemd-motion/usr/share/systemd-motion/
+	cp README.md debian/systemd-motion/usr/share/systemd-motion/
 	
-	# Install desktop file and icon
-	mkdir -p debian/motion-activity-monitor/usr/share/applications
-	mkdir -p debian/motion-activity-monitor/usr/share/icons/hicolor/48x48/apps
-	cp data/com.motion.activity-monitor.desktop debian/motion-activity-monitor/usr/share/applications/
-	cp data/icons/48x48/apps/com.motion.activity-monitor.png debian/motion-activity-monitor/usr/share/icons/hicolor/48x48/apps/
-	
-	# Make scripts executable
-	chmod +x debian/motion-activity-monitor/usr/share/motion/motion/desktop_app.py
+	# Install scripts
+	mkdir -p debian/systemd-motion/usr/bin
+	cp scripts/motion-ctl debian/systemd-motion/usr/bin/
+	cp scripts/motion-gui debian/systemd-motion/usr/bin/
+	chmod +x debian/systemd-motion/usr/bin/*

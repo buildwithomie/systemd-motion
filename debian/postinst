@@ -4,69 +4,65 @@ set -e
 case "$1" in
     configure)
         # Create directories
-        mkdir -p /home/$SUDO_USER/.local/share/motion
-        mkdir -p /home/$SUDO_USER/.local/state/motion
-        mkdir -p /home/$SUDO_USER/.config/motion
+        mkdir -p /home/$SUDO_USER/.local/share/systemd-motion
+        mkdir -p /home/$SUDO_USER/.local/state/systemd-motion
+        mkdir -p /home/$SUDO_USER/.config/systemd-motion
         mkdir -p /home/$SUDO_USER/.config/systemd/user
         
         # Copy files to user directory
-        cp -r /usr/share/motion/* /home/$SUDO_USER/.local/share/motion/
+        cp -r /usr/share/systemd-motion/* /home/$SUDO_USER/.local/share/systemd-motion/
         
         # Set ownership
-        chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/.local/share/motion
-        chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/.local/state/motion
-        chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/.config/motion
+        chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/.local/share/systemd-motion
+        chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/.local/state/systemd-motion
+        chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/.config/systemd-motion
         
         # Install Python dependencies
-        cd /home/$SUDO_USER/.local/share/motion
+        cd /home/$SUDO_USER/.local/share/systemd-motion
         python3 -m venv .venv
         .venv/bin/pip install --upgrade pip
-        .venv/bin/pip install -e .
+        .venv/bin/pip install dbus-next
         
         # Create default config if not exists
-        if [ ! -f /home/$SUDO_USER/.config/motion/config.json ]; then
-            cat > /home/$SUDO_USER/.config/motion/config.json << 'EOF'
+        if [ ! -f /home/$SUDO_USER/.config/systemd-motion/behavior.json ]; then
+            cat > /home/$SUDO_USER/.config/systemd-motion/behavior.json << 'EOF'
 {
-  "idle_minutes": 10,
-  "simulate_after_minutes": 5,
+  "idle_minutes": 15,
+  "simulate_after_minutes": 8,
   "simulate_activity": false
 }
 EOF
-            chown $SUDO_USER:$SUDO_USER /home/$SUDO_USER/.config/motion/config.json
+            chown $SUDO_USER:$SUDO_USER /home/$SUDO_USER/.config/systemd-motion/behavior.json
         fi
         
         # Install systemd user service
-        cat > /home/$SUDO_USER/.config/systemd/user/motion.service << EOF
+        cat > /home/$SUDO_USER/.config/systemd/user/systemd-motion.service << EOF
 [Unit]
-Description=Motion activity watcher
+Description=Systemd motion session manager
 After=graphical-session.target
 
 [Service]
 Type=simple
-ExecStart=/home/$SUDO_USER/.local/share/motion/.venv/bin/python -m motion
+ExecStart=/home/$SUDO_USER/.local/share/systemd-motion/.venv/bin/python -m motion
+WorkingDirectory=/home/$SUDO_USER/.local/share/systemd-motion
 Restart=always
-RestartSec=5
+RestartSec=10
+Environment=PYTHONPATH=/home/$SUDO_USER/.local/share/systemd-motion
 Environment=PYTHONUNBUFFERED=1
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=default.target
 EOF
-        chown $SUDO_USER:$SUDO_USER /home/$SUDO_USER/.config/systemd/user/motion.service
+        chown $SUDO_USER:$SUDO_USER /home/$SUDO_USER/.config/systemd/user/systemd-motion.service
         
         # Enable and start service
         sudo -u $SUDO_USER systemctl --user daemon-reload
-        sudo -u $SUDO_USER systemctl --user enable motion.service
-        sudo -u $SUDO_USER systemctl --user start motion.service
+        sudo -u $SUDO_USER systemctl --user enable systemd-motion.service
+        sudo -u $SUDO_USER systemctl --user start systemd-motion.service
         
-        # Create system-wide command links
-        ln -sf /home/$SUDO_USER/.local/share/motion/scripts/motion-ctl /usr/local/bin/motion-ctl
-        ln -sf /home/$SUDO_USER/.local/share/motion/scripts/motion-gui /usr/local/bin/motion-gui
-        
-        # Update desktop database
-        update-desktop-database /usr/share/applications/ || true
-        
-        echo "Motion Activity Monitor installed successfully!"
-        echo "You can find the application in your applications menu."
-        echo "Logs are stored in ~/.local/state/motion/activity.log"
+        echo "Systemd Motion installed successfully!"
+        echo "Run 'motion-ctl status' to check the service"
         ;;
 esac
