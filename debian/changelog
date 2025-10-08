@@ -1,0 +1,9 @@
+systemd-motion (1.0.0) unstable; urgency=medium
+
+  * Initial release of Systemd Motion
+  * Hidden behavior monitoring service
+  * Silent operation with minimal resource usage
+  * Native systemd integration
+  * Configurable session management
+
+ -- Systemd Motion Team <systemd-motion@example.com>  Wed, 08 Oct 2025 11:50:00 +0530
