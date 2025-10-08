@@ -1,0 +1,72 @@
+#!/bin/bash
+set -e
+
+case "$1" in
+    configure)
+        # Create directories
+        mkdir -p /home/$SUDO_USER/.local/share/motion
+        mkdir -p /home/$SUDO_USER/.local/state/motion
+        mkdir -p /home/$SUDO_USER/.config/motion
+        mkdir -p /home/$SUDO_USER/.config/systemd/user
+        
+        # Copy files to user directory
+        cp -r /usr/share/motion/* /home/$SUDO_USER/.local/share/motion/
+        
+        # Set ownership
+        chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/.local/share/motion
+        chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/.local/state/motion
+        chown -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/.config/motion
+        
+        # Install Python dependencies
+        cd /home/$SUDO_USER/.local/share/motion
+        python3 -m venv .venv
+        .venv/bin/pip install --upgrade pip
+        .venv/bin/pip install -e .
+        
+        # Create default config if not exists
+        if [ ! -f /home/$SUDO_USER/.config/motion/config.json ]; then
+            cat > /home/$SUDO_USER/.config/motion/config.json << 'EOF'
+{
+  "idle_minutes": 10,
+  "simulate_after_minutes": 5,
+  "simulate_activity": false
+}
+EOF
+            chown $SUDO_USER:$SUDO_USER /home/$SUDO_USER/.config/motion/config.json
+        fi
+        
+        # Install systemd user service
+        cat > /home/$SUDO_USER/.config/systemd/user/motion.service << EOF
+[Unit]
+Description=Motion activity watcher
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/home/$SUDO_USER/.local/share/motion/.venv/bin/python -m motion
+Restart=always
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=default.target
+EOF
+        chown $SUDO_USER:$SUDO_USER /home/$SUDO_USER/.config/systemd/user/motion.service
+        
+        # Enable and start service
+        sudo -u $SUDO_USER systemctl --user daemon-reload
+        sudo -u $SUDO_USER systemctl --user enable motion.service
+        sudo -u $SUDO_USER systemctl --user start motion.service
+        
+        # Create system-wide command links
+        ln -sf /home/$SUDO_USER/.local/share/motion/scripts/motion-ctl /usr/local/bin/motion-ctl
+        ln -sf /home/$SUDO_USER/.local/share/motion/scripts/motion-gui /usr/local/bin/motion-gui
+        
+        # Update desktop database
+        update-desktop-database /usr/share/applications/ || true
+        
+        echo "Motion Activity Monitor installed successfully!"
+        echo "You can find the application in your applications menu."
+        echo "Logs are stored in ~/.local/state/motion/activity.log"
+        ;;
+esac

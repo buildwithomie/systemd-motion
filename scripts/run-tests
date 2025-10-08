@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+# Motion Test Suite Runner
+# Usage: run-tests [verbose]
+
+MOTION_DIR="$HOME/.local/share/motion"
+
+if [ ! -d "$MOTION_DIR" ]; then
+    echo "Motion is not installed. Please run the installer first."
+    exit 1
+fi
+
+if [ ! -f "$MOTION_DIR/.venv/bin/python" ]; then
+    echo "Motion virtual environment not found. Please reinstall motion."
+    exit 1
+fi
+
+# Change to motion directory
+cd "$MOTION_DIR"
+
+# Run tests with virtual environment
+if [ "$1" = "verbose" ]; then
+    "$MOTION_DIR/.venv/bin/python" -m pytest tests/ -v
+else
+    "$MOTION_DIR/.venv/bin/python" -m pytest tests/
+fi
+
+# Also run unittest if pytest not available
+if [ $? -ne 0 ]; then
+    echo "Falling back to unittest..."
+    "$MOTION_DIR/.venv/bin/python" tests/test_motion.py
+fi

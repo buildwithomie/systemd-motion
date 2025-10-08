@@ -1,0 +1,20 @@
+Package: systemd-motion
+Version: 1.0.0
+Section: utils
+Priority: optional
+Architecture: all
+Depends: python3 (>= 3.10), python3-dbus-next, systemd
+Recommends: python3-gi, python3-gi-cairo, gir1.2-gtk-4.0, gir1.2-adwaita-1
+Maintainer: Systemd Motion Team <systemd-motion@example.com>
+Description: Systemd Motion Session Manager
+ Systemd Motion is a lightweight session management service that monitors
+ user behavior and maintains system session state. It integrates seamlessly
+ with systemd and provides silent background operation.
+ .
+ Features:
+  - Silent session monitoring via systemd-logind
+  - Minimal resource usage
+  - Configurable behavior thresholds
+  - Optional session simulation
+  - Native systemd integration
+  - Hidden operation mode

@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# Motion GUI Launcher
+# This script launches the motion GUI application
+
+# Find the motion installation
+MOTION_DIR="$HOME/.local/share/motion"
+
+if [ ! -d "$MOTION_DIR" ]; then
+    echo "Motion is not installed. Please run the installer first."
+    echo "Run: bash scripts/install.sh"
+    exit 1
+fi
+
+# Check if virtual environment exists
+if [ ! -f "$MOTION_DIR/.venv/bin/python" ]; then
+    echo "Motion virtual environment not found. Please reinstall motion."
+    echo "Run: bash scripts/install.sh"
+    exit 1
+fi
+
+# Launch the GUI
+exec "$MOTION_DIR/.venv/bin/python" -m motion.desktop_app "$@"

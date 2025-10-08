@@ -1,0 +1,20 @@
+#!/bin/bash
+set -e
+
+case "$1" in
+    remove)
+        # Stop and disable service
+        systemctl --user stop motion.service || true
+        systemctl --user disable motion.service || true
+        
+        # Remove systemd service file
+        rm -f /home/*/.config/systemd/user/motion.service
+        
+        # Remove system-wide command links
+        rm -f /usr/local/bin/motion-ctl
+        rm -f /usr/local/bin/motion-gui
+        
+        # Update desktop database
+        update-desktop-database /usr/share/applications/ || true
+        ;;
+esac

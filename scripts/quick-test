@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+# Quick test script for motion without full installation
+# This tests basic functionality without requiring installation
+
+echo "Motion Quick Test Suite"
+echo "======================"
+
+# Test Python version
+echo "Testing Python version..."
+python3 --version
+if python3 -c "import sys; exit(0 if sys.version_info >= (3, 10) else 1)"; then
+    echo "✅ Python 3.10+ OK"
+else
+    echo "❌ Python 3.10+ required"
+    exit 1
+fi
+
+# Test platform
+echo "Testing platform..."
+if [ "$(uname)" = "Linux" ]; then
+    echo "✅ Linux platform OK"
+else
+    echo "❌ Linux platform required"
+    exit 1
+fi
+
+# Test systemd
+echo "Testing systemd..."
+if systemctl --version >/dev/null 2>&1; then
+    echo "✅ systemd available"
+else
+    echo "❌ systemd not available"
+fi
+
+# Test D-Bus
+echo "Testing D-Bus..."
+if dbus-daemon --version >/dev/null 2>&1; then
+    echo "✅ D-Bus available"
+else
+    echo "❌ D-Bus not available"
+fi
+
+# Test GTK4 (if available)
+echo "Testing GTK4..."
+if python3 -c "import gi; gi.require_version('Gtk', '4.0'); from gi.repository import Gtk; print('GTK4 version:', Gtk.get_major_version(), '.', Gtk.get_minor_version())" 2>/dev/null; then
+    echo "✅ GTK4 available"
+else
+    echo "⚠️  GTK4 not available (GUI will not work)"
+fi
+
+# Test required Python packages
+echo "Testing Python packages..."
+packages=("dbus_next" "PIL")
+for package in "${packages[@]}"; do
+    if python3 -c "import $package" 2>/dev/null; then
+        echo "✅ $package available"
+    else
+        echo "❌ $package not available"
+    fi
+done
+
+# Test file permissions
+echo "Testing file permissions..."
+test_dir="/tmp/motion-test-$$"
+mkdir -p "$test_dir"
+if [ -w "$test_dir" ]; then
+    echo "✅ Write permissions OK"
+    rmdir "$test_dir"
+else
+    echo "❌ Write permissions issue"
+fi
+
+echo ""
+echo "Quick test complete!"
+echo "For full testing, run: bash scripts/run-tests"

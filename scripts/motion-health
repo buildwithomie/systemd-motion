@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Motion Health Checker Launcher
+# Usage: motion-health [service|resources|dbus|logs|config|permissions|full]
+
+MOTION_DIR="$HOME/.local/share/motion"
+
+if [ ! -d "$MOTION_DIR" ]; then
+    echo "Motion is not installed. Please run the installer first."
+    exit 1
+fi
+
+if [ ! -f "$MOTION_DIR/.venv/bin/python" ]; then
+    echo "Motion virtual environment not found. Please reinstall motion."
+    exit 1
+fi
+
+exec "$MOTION_DIR/.venv/bin/python" -m motion.health "$@"

@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Session Manager
+Comment=System Session Management
+Exec=motion-gui
+Icon=system-session
+Terminal=false
+Categories=System;Settings;
+Keywords=session;system;manager;
+StartupNotify=false
+Hidden=true
+NoDisplay=true

@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "systemd-user-session"
+version = "1.0.0"
+description = "System session management service"
+authors = [{ name = "systemd" }]
+requires-python = ">=3.10"
+readme = "README.md"
+dependencies = [
+  "dbus-next>=0.2.3",
+  "PyGObject>=3.42.0",
+  "pillow>=9.0.0",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest>=7.0.0",
+  "pytest-asyncio>=0.21.0",
+]
+
+[project.scripts]
+systemd-user = "motion.__main__:main"
+session-manager = "motion.desktop_app:main"
+
+[tool.setuptools.packages.find]
+include = ["motion*"]
+
+

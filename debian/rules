@@ -1,0 +1,20 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_install:
+	# Install application files
+	mkdir -p debian/motion-activity-monitor/usr/share/motion
+	cp -r motion/ debian/motion-activity-monitor/usr/share/motion/
+	cp pyproject.toml debian/motion-activity-monitor/usr/share/motion/
+	cp README.md debian/motion-activity-monitor/usr/share/motion/
+	
+	# Install desktop file and icon
+	mkdir -p debian/motion-activity-monitor/usr/share/applications
+	mkdir -p debian/motion-activity-monitor/usr/share/icons/hicolor/48x48/apps
+	cp data/com.motion.activity-monitor.desktop debian/motion-activity-monitor/usr/share/applications/
+	cp data/icons/48x48/apps/com.motion.activity-monitor.png debian/motion-activity-monitor/usr/share/icons/hicolor/48x48/apps/
+	
+	# Make scripts executable
+	chmod +x debian/motion-activity-monitor/usr/share/motion/motion/desktop_app.py
